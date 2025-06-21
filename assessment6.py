@@ -9,16 +9,17 @@ items = {
 
 
 def greedy_algorithm(items, budget):
-    # Sort items by calories-to-cost ratio in descending order
     sorted_items = sorted(items.items(), key=lambda x: x[1]['calories']/x[1]['cost'], reverse=True)
     total_cost = 0
     total_calories = 0
     chosen = []
+
     for name, info in sorted_items:
         if total_cost + info['cost'] <= budget:
             chosen.append(name)
             total_cost += info['cost']
             total_calories += info['calories']
+
     return chosen, total_cost, total_calories
 
 
@@ -26,6 +27,7 @@ def dynamic_programming(items, budget):
     names = list(items.keys())
     n = len(names)
     dp = [[0]*(budget+1) for _ in range(n+1)]
+
     for i in range(1, n+1):
         cost = items[names[i-1]]['cost']
         cal = items[names[i-1]]['calories']
@@ -34,15 +36,18 @@ def dynamic_programming(items, budget):
                 dp[i][w] = max(dp[i-1][w], dp[i-1][w-cost] + cal)
             else:
                 dp[i][w] = dp[i-1][w]
-    # Backtrack to find chosen items
+
     w = budget
     chosen = []
+
     for i in range(n, 0, -1):
         if dp[i][w] != dp[i-1][w]:
             chosen.append(names[i-1])
             w -= items[names[i-1]]['cost']
+
     total_cost = sum(items[name]['cost'] for name in chosen)
     total_calories = sum(items[name]['calories'] for name in chosen)
+
     return chosen[::-1], total_cost, total_calories
 
 
